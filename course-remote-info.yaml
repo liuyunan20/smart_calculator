@@ -7,10 +7,10 @@ update_date: Thu, 01 Jan 1970 00:00:00 UTC
 stages:
 - id: 409
   step: 6590
-  is_completed: false
+  is_completed: true
 - id: 410
   step: 6591
-  is_completed: false
+  is_completed: true
 - id: 411
   step: 6592
   is_completed: false
