@@ -141,5 +141,8 @@ files:
         CalcTest("calculator.calculator").run_tests()
   learner_created: false
 feedback_link: https://hyperskill.org/projects/74/stages/412/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Mon, 21 Mar 2022 20:14:15 UTC
 record: -1
