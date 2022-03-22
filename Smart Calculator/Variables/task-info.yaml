@@ -273,6 +273,12 @@ files:
     if __name__ == '__main__':
         CalcTest("calculator.calculator").run_tests()
   learner_created: false
+- name: calculator/my_test.py
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/74/stages/414/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Tue, 22 Mar 2022 19:26:00 UTC
 record: -1
