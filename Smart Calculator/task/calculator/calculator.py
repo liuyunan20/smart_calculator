@@ -1,17 +1,69 @@
+import re
+
+
 class Calculator:
     """create a Calculator object"""
     def __init__(self):
+        self.operator = ("+", "-", "*", "/", "^", "(", ")")
         self.variables = {}
+        self.precedence = {"+": 0, "-": 0, "*": 1, "/": 1, "^": 2, "(": 3, ")": 3}
         self.help_information = '''The program operate addition and subtraction of numbers.
 If the user has entered several same operators following each other, the program still work.
 It support both unary and binary minus operators.
 Storing results in variables and then operating them at any time is a very convenient function.'''
 
+    def infix_to_postfix(self, expression):
+        result = []
+        stack = []
+        while expression:
+            x = expression.pop(0)  # the current element in infix expression
+            if x == "(":
+                stack.append(x)
+                continue
+            if x == ")":
+                while stack and stack[-1] != "(":
+                    result.append(stack.pop())
+                if not stack:
+                    return "Invalid expression"
+                if stack[-1] == "(":
+                    stack.pop()
+                    continue
+            if x not in self.operator:
+                result.append(x)
+                continue
+            elif not stack or stack[-1] == "(":
+                stack.append(x)
+                continue
+            elif self.precedence[stack[-1]] < self.precedence[x]:
+                stack.append(x)
+                continue
+            else:
+                while stack and self.precedence[stack[-1]] >= self.precedence[x]:
+                    if stack[-1] == "(":
+                        break
+                    result.append(stack.pop())
+                stack.append(x)
+                continue
+        if "(" in stack or ")" in stack:
+            return "Invalid expression"
+        while stack:
+            result.append(stack.pop())
+
     # process input to available parameters
     def process_input(self, ipt):
         ipt = ipt.split()
         nums = []
+        right_parenthesis = 0
         for x in ipt:
+            if right_parenthesis == 1:
+                nums.append(")")
+                right_parenthesis = 0
+            if x.startswith("("):
+                nums.append("(")
+                x = x.lstrip("(")
+            if x.endswith(")"):
+                x = x.rsplit(")")
+                right_parenthesis = 1
             try:
                 x = int(x)
                 nums.append(x)
@@ -21,25 +73,19 @@ Storing results in variables and then operating them at any time is a very conve
                     continue
                 if x.isalpha():
                     return "Unknown variable"
-                x = list(x)
-                for j in x:
-                    if j not in ("+", "-"):
-                        return "Invalid identifier"
-                if x[0] == "-":
-                    if len(x) % 2 == 1:
-                        nums.append("-")
-                if x[0] == "+":
+                if re.fullmatch("\\++", x):
                     nums.append("+")
-        if len(nums) > 1 and "+" not in nums and "-" not in nums:
+                elif re.fullmatch("-+", x):
+                    nums.append("-") if len(x) % 2 == 1 else nums.append("+")
+                elif x in ("*", "/", "^"):
+                    nums.append(x)
+                else:
+                    return "Invalid identifier"
+        if len(nums) > 1 \
+                and "+" not in nums and "-" not in nums and "*" not in nums and "/" not in nums and "^" not in nums:
             return "Invalid expression"
-        for i, num in enumerate(nums):
-            if i == len(nums) - 1 and num in ("+", "-"):
-                return "Invalid expression"
-            if num == "-":
-                nums[i] = 0
-                nums[i + 1] = -nums[i + 1]
-            if num == "+":
-                nums[i] = 0
+        if nums[-1] in ("+", "-", "*", "/", "^", "("):
+            return "Invalid expression"
         return nums
 
     def assign_variable(self, ipt):
@@ -92,8 +138,6 @@ Storing results in variables and then operating them at any time is a very conve
                 print("Invalid identifier")
                 continue
             print(sum(numbers))
-
-
 
 
 cal = Calculator()

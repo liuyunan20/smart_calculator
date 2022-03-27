@@ -210,6 +210,12 @@ files:
     if __name__ == '__main__':
         CalcTest("calculator.calculator").run_tests()
   learner_created: false
+- name: calculator/my_test.py
+  visible: true
+  text: |+
+    print("a1".strip().isalpha())
+
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/74/stages/415/implement#comment
 status: Unchecked
 record: -1
