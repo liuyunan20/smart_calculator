@@ -1,4 +1,5 @@
 import re
+import string
 
 
 def infix_to_postfix(expression):
@@ -42,20 +43,41 @@ def infix_to_postfix(expression):
 
 
 def process_input(ipt):
-    variables = {}
-    ipt = ipt.split()
+    ipt = list(ipt.strip())
+    if ipt[0] in ("+", "-", "*", "/", "^", ")") or ipt[-1] in ("+", "-", "*", "/", "^", "("):
+        return "Invalid expression"
+    exp = []  # expression
+    while ipt:
+        x = ipt.pop(0)
+        operator = ""
+        operand = ""
+        if x in ("(", ")"):
+            exp.append(x)
+            continue
+        while x in ("+", "-", "*", "/", "^"):
+            operator += x
+            if not ipt or ipt[0] not in ("+", "-", "*", "/", "^"):
+                break
+            x = ipt.pop(0)
+
+        if operator:
+            exp.append(operator)
+            operator = ""
+            continue
+        while x in string.digits or x in string.ascii_letters:
+            operand += x
+            if not ipt or (ipt[0] not in string.digits and x not in string.ascii_letters):
+                break
+            x = ipt.pop(0)
+        if operand:
+            exp.append(operand)
+            operand = ""
+            continue
+    if x == ")":
+        exp.append(x)
     nums = []
-    right_parenthesis = 0
-    for x in ipt:
-        if right_parenthesis == 1:
-            nums.append(")")
-            right_parenthesis = 0
-        if x.startswith("("):
-            nums.append("(")
-            x = x.lstrip("(")
-        if x.endswith(")"):
-            x = x.rstrip(")")
-            right_parenthesis = 1
+    variables = {}
+    for x in exp:
         try:
             x = int(x)
             nums.append(x)
@@ -69,17 +91,39 @@ def process_input(ipt):
                 nums.append("+")
             elif re.fullmatch("-+", x):
                 nums.append("-") if len(x) % 2 == 1 else nums.append("+")
-            elif x in ("*", "/", "^"):
+            elif x in ("*", "/", "^", "(", ")"):
                 nums.append(x)
             else:
                 return "Invalid identifier"
     if len(nums) > 1 \
             and "+" not in nums and "-" not in nums and "*" not in nums and "/" not in nums and "^" not in nums:
         return "Invalid expression"
-    if nums[-1] in ("+", "-", "*", "/", "^", "("):
-        return "Invalid expression"
     return nums
 
 
-ex = "a*2+b*3+c*(2+3)"
+def cal_result(post_exp):
+    stack = []
+    for x in post_exp:
+        if x in ("+", "-", "*", "/", "^"):
+            opd_2 = stack.pop()
+            opd_1 = stack.pop()
+            if x == "+":
+                stack.append(opd_1 + opd_2)
+            if x == "-":
+                stack.append(opd_1 - opd_2)
+            if x == "*":
+                stack.append(opd_1 * opd_2)
+            if x == "/":
+                stack.append(opd_1 / opd_2)
+            if x == "^":
+                stack.append(opd_1 ** opd_2)
+            continue
+        stack.append(x)
+    print(stack)
+    return stack[-1]
+
+
+ex = "2^2"
 print(process_input(ex))
+print(infix_to_postfix(process_input(ex)))
+print(cal_result(infix_to_postfix(process_input(ex))))
